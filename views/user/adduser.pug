@@ -1,0 +1,39 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", href="stylesheets/bootstrap.min.css")
+        title= title 
+    body 
+        .container.mt-4
+            h3.mb-5 Add User
+            form(action="/adduser" method="POST")
+                .mb-3.row
+                    label.col.col-form-label(for="name") Name
+                    .col-sm-10
+                        input#name.form-control(type="name" name="name")
+                .mb-3.row
+                    label.col-sm-2.col-form-label(for="email") Email
+                    .col-sm-10
+                        input#email.form-control(type="email" name="email")
+                .mb-3.row
+                    label.col-sm-2.col-form-label(for="mobile") Mobile
+                    .col-sm-10
+                        input#mobile.form-control(type="number" name="mobile")
+                .mb-3.row
+                    label.col-sm-2.col-form-label(for="birthdate") birthdate
+                    .col-sm-10.col-md-auto
+                        input#birthdate.form-control(type="date" name="birthdate")
+                .mb-3.row
+                    label.col-sm-2.col-form-label(for="address") address
+                    .col-sm-10
+                        textarea#address.form-control(name="address", cols="30", rows="3") 
+            
+                .mt-5.d-grid.gap-2.d-md-flex.justify-content-md-end
+                    button.btn.btn-primary Cancel
+                    button.btn.btn-primary Submit
+
+    script(src="javascripts/bootstrap.min.js")
+    script(src="javascripts/jquery-3.6.0.min.js")  
