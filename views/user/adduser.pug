@@ -9,11 +9,12 @@ html(lang="en")
     body 
         .container.mt-4
             h3.mb-5 Add User
-            form(action="/adduser" method="POST")
+            form#adduser.needs-validation(action="/adduser" method="POST")
                 .mb-3.row
                     label.col.col-form-label(for="name") Name
                     .col-sm-10
                         input#name.form-control(type="name" name="name")
+                        .valid-feedback 
                 .mb-3.row
                     label.col-sm-2.col-form-label(for="email") Email
                     .col-sm-10
@@ -29,11 +30,42 @@ html(lang="en")
                 .mb-3.row
                     label.col-sm-2.col-form-label(for="address") address
                     .col-sm-10
-                        textarea#address.form-control(name="address", cols="30", rows="3") 
+                        textarea#address.form-control(cols="30" rows="3" name="address")
             
                 .mt-5.d-grid.gap-2.d-md-flex.justify-content-md-end
                     button.btn.btn-primary Cancel
                     button.btn.btn-primary Submit
 
     script(src="javascripts/bootstrap.min.js")
-    script(src="javascripts/jquery-3.6.0.min.js")  
+    script(src="javascripts/jquery-3.6.0.min.js") 
+    script(src="javascripts/jquery.validate.js") 
+
+    script.
+        $(document).ready(function() {
+            $("#adduser").validate({
+                errorClass: "is-invalid",
+                validClss: "is-valid",
+                rules: {
+                    name: "required",
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    mobile: "required",
+                    birthdate: "required",
+                    address: "required"
+
+                },
+                messages: {
+                    name: "Name cannot be empety...!!!",
+                    email: {
+                        required: "email cannot be empty...!!!",
+                        email: "Invalid format email"
+                    },
+                    mobile: "Mobile cannot be empty...!!!",
+                    birthdate: "Birthdate connot be empty...!!!",
+                    address: "Address cannot be empty...!!!"
+                }
+
+            })
+        })
