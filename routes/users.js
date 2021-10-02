@@ -6,8 +6,13 @@ var Makeid = require('../service/generateId');
 
 
 //TODO: Get page
+
+//todo: get all user
 router.get('/', (req, res) => {
-  res.render('index', { title: 'App Employee' });
+  User.findAll()
+      .then((user)=>{
+        res.render('index', { title: 'App Employee', users: user});
+      });
 });
 
 router.get('/adduser', (req, res) => {
@@ -15,7 +20,7 @@ router.get('/adduser', (req, res) => {
 });
 
 
-//TODO: Activity CRUD users
+//TODO: Activity CUD users
 router.post('/adduser', async(req, res, next) => {
   const generateid = new Makeid();
 
@@ -31,6 +36,8 @@ router.post('/adduser', async(req, res, next) => {
   });
 
   await createuser.save();
+
+  res.redirect('back');
 
 
 });
