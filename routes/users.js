@@ -5,19 +5,32 @@ var User = require('../models').users;
 var Makeid = require('../service/generateId');
 
 
-//TODO: Get page
+//TODO: Activity Get
 
-//todo: get all user
+//todo: Get view page home
 router.get('/', (req, res) => {
-  User.findAll()
+  User.findAll({limit: 5,offset: 0})
       .then((user)=>{
         res.render('index', { title: 'App Employee', users: user});
       });
 });
 
+//todo: Get view page Add User
 router.get('/adduser', (req, res) => {
   res.render('user/adduser', {title: 'App Employee'});
+
 });
+
+//todo: Get all user from database
+router.get('/user', async(req, res) => {
+
+  User.findAll()
+      .then((user)=>{
+        res.json({
+          users: user
+        })
+      });
+})
 
 
 //TODO: Activity CUD users
@@ -38,8 +51,6 @@ router.post('/adduser', async(req, res, next) => {
   await createuser.save();
 
   res.redirect('back');
-
-
 });
 
 

@@ -5,19 +5,19 @@ html(lang="en")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         link(rel="stylesheet", href="stylesheets/bootstrap.min.css")
-        title= title 
-    body  
-        header 
+        title= title
+    body
+        header
             nav.navbar.navbar-dark.bg-primary
                 a.navbar-brand(style="margin-left: 20px;") List Employee
                 form.form-inline(action="")
                     input.from-control.mr-sm-2(type="search" placeholder="by ID,name,or email" aria-label="Search")
-                    button.btn.btn-outline-light.my-2.my-sm-0(type="submit" style="margin-right: 40px;margin-left: 10px;") Search 
+                    button.btn.btn-outline-light.my-2.my-sm-0(type="submit" style="margin-right: 40px;margin-left: 10px;") Search
                     button#add.btn.btn-outline-light.my-2.my-sm-0(type="submit" style="margin-right: 10px;" formaction="/adduser") ADD
 
-        .container-fluid 
+        .container-fluid
             .card(style="margin-top: 80px")
-            table.table.table-hovered.table-striped.table-bordered
+            table#allusers.table.table-hovered.table-striped.table-bordered
                 thead
                     tr.table-primary
                         td.text-center ID
@@ -34,11 +34,226 @@ html(lang="en")
                             td.text-center= user.mobile
                             td.text-center
                                 a.btn.btn-success(type="submit") Detail
-                                a.btn.btn-success(type="submit" style="margin-left: 10px;") Edit
-                                a.btn.btn-danger(type="submit" style="margin-left: 10px;") Delete
-                    else 
+                                a.btn.btn-success.ms-3(type="submit") Edit
+                                a.btn.btn-danger.ms-3(type="submit") Delete
+                    else
                         tr
                             td.text-center(colspan="5") empty
-                
+
+        .fixed-bottom
+            .container.mb-4
+                .justify-content-md-center.row
+                        .col-md-auto
+                            label.pt-1(for="show") Show
+                        .col-md-auto
+                            select#limit.form-select(name="limit")
+                                option(value="")
+                                option(value="5") 5
+                                option(value="10") 10
+                                option(value="15") 15
+                        .col-md-auto
+                            label.pt-1(for="perpage") per page
+                        .col-md-auto
+                            nav(aria-label="Page nation example")
+                                ul.pagination
+                                    li#firstPrev.page-item
+                                        a.page-link.first-link(href="#") &lt;
+                                    li#previous.page-item
+                                        a.page-link(aria-label="Previous")
+                                            span(aria-hidden="true") &laquo;
+                                    li#page.page-item
+                                        a.page-link()
+                                    li#next.page-item
+                                        a.page-link(aria-label="Next")
+                                            span(aria-hidden="true") &raquo;
+                                    li#lastNext.page-item
+                                        a.page-link.first-link() &gt;
+
+
+
+            .container-fluid.bg-primary
+                .row
+                    .col
+                        p.text-start.text-light.my-2 copyright© RiefDev 2021
+
+
         script(src="javascripts/bootstrap.min.js")
         script(src="javascripts/jquery-3.6.0.min.js")
+        script(src="javascripts/smpSortableTable.js")
+
+        script.
+            $(document).ready(async function(){
+                let limits;
+                let page = 1;
+
+                var user = await $.ajax({
+                    url: 'http://localhost:3000/user',
+                    type: 'get',
+                    dataType: 'json'
+                });
+
+
+                function renderTable(start, end, lim, data) {
+                    //- console.log(start, end, lim)
+                    $('#allusers > tbody').empty();
+
+                    for (var i = start; i < Math.min(end, lim); i++) {
+                        var row =   "<tr><td>"+data.users[i].id+
+                                    "</td><td>"+data.users[i].name+
+                                    "</td><td>"+data.users[i].email+
+                                    "</td><td>"+data.users[i].mobile+
+                                    "</td><td><a class='btn btn-success'>"+"Detail"+
+                                            "</a><a class='btn btn-success ms-3'>"+"Edit"+
+                                            "</a><a class='btn btn-danger ms-3'>"+"Delete"+
+                                    "</a></td></tr>";
+
+                        $('#allusers > tbody').addClass("text-center").append(row);
+                    }
+                };
+
+                //TODO: init counter pagination
+                if (user.users.length) {
+                    var totalPage = Math.ceil(user.users.length/5);
+
+                    var text = "<a class='page-link'>Page 1 of "+totalPage+"</a>";
+                    $('ul.pagination > li#page').empty().append(text);
+
+                    $('ul.pagination > li#firstPrev').addClass('disabled');
+                    $('ul.pagination > li#previous').addClass('disabled');
+
+                    initPagination(5);
+                } else {
+                    let text = "<a class='page-link'>Nothing Data</a>";
+                    $('ul.pagination > li#page').empty().append(text);
+                };
+
+                //TODO: Pagination Last, Next & Previous, First
+                function initPagination (lim) {
+                    if (user.users.length > lim) {
+                        let totalPage = Math.ceil(user.users.length/lim);
+
+                        $('ul.pagination > li#next').removeClass('disabled');
+                        $('ul.pagination > li#lastNext').removeClass('disabled');
+
+                        let text = "<a class='page-link'>Page "+page+" of "+totalPage+"</a>";
+                        $('ul.pagination > li#page').empty().append(text);
+
+                        $('ul.pagination > li#next').click(function(){
+                            if (!$(this).hasClass('disabled')) {
+                                let totalPage = Math.ceil(user.users.length/lim);
+                                let pagePlus = page + 1;
+
+                                let size = user.users.length
+                                let start = (pagePlus - 1) * lim;
+                                let end = pagePlus * lim;
+
+
+                                renderTable(start, size, end, user);
+
+                                let text = "<a class='page-link'>Page "+pagePlus+" of "+totalPage+"</a>";
+                                $('ul.pagination > li#page').empty().append(text);
+
+                                $('ul.pagination > li#firstPrev').removeClass('disabled');
+                                $('ul.pagination > li#previous').removeClass('disabled');
+                                if (end >= size) {
+                                    $('ul.pagination > li#next').addClass('disabled');
+                                    $('ul.pagination > li#lastNext').addClass('disabled');
+                                }
+                                page = pagePlus;
+                            };
+                        });
+
+                        $('ul.pagination > li#lastNext').click(function(){
+                            if (!$(this).hasClass('disabled')) {
+                                let totalPage = Math.ceil(user.users.length/lim);
+                                page = totalPage;
+
+                                let size = user.users.length;
+                                let start = (page - 1) * lim;
+                                let end = page * lim;
+
+                                renderTable(start, size, end, user);
+
+                                let text = "<a class='page-link'>Page "+page+" of "+totalPage+"</a>";
+                                $('ul.pagination > li#page').empty().append(text);
+
+                                $('ul.pagination > li#firstPrev').removeClass('disabled');
+                                $('ul.pagination > li#previous').removeClass('disabled');
+                                if (end >= size) {
+                                    $('ul.pagination > li#next').addClass('disabled');
+                                    $('ul.pagination > li#lastNext').addClass('disabled');
+                                };
+
+                            };
+                        });
+
+                        $('ul.pagination > li#previous').click(function(){
+                            if (!$(this).hasClass('disabled')) {
+                                let totalPage = Math.ceil(user.users.length/lim);
+                                let minPage = page - 1
+
+                                let size = user.users.length;
+                                let start = (minPage - 1) * lim;
+                                let end = minPage * lim;
+
+                                renderTable(start, size, end, user);
+
+                                let text = "<a class='page-link'>Page "+minPage+" of "+totalPage+"</a>";
+                                $('ul.pagination > li#page').empty().append(text);
+
+                                $('ul.pagination > li#next').removeClass('disabled');
+                                $('ul.pagination > li#lastNext').removeClass('disabled');
+                                if (!start) {
+                                    $('ul.pagination > li#firstPrev').addClass('disabled');
+                                    $('ul.pagination > li#previous').addClass('disabled');
+                                };
+
+                                page = minPage;
+                            };
+                        });
+
+                        $('ul.pagination > li#firstPrev').click(function(){
+                            if (!$(this).hasClass('disabled')) {
+                                let totalPage = Math.ceil(user.users.length/lim);
+                                page = 1;
+
+                                let size = user.users.length;
+                                let start = (page - 1) * lim;
+                                let end = page * lim;
+
+                                renderTable(start, size, end, user);
+
+                                let text = "<a class='page-link'>Page "+page+" of "+totalPage+"</a>";
+                                $('ul.pagination > li#page').empty().append(text);
+
+                                $('ul.pagination > li#next').removeClass('disabled');
+                                $('ul.pagination > li#lastNext').removeClass('disabled');
+                                if (!start) {
+                                    $('ul.pagination > li#firstPrev').addClass('disabled');
+                                    $('ul.pagination > li#previous').addClass('disabled');
+                                };
+                            };
+                        });
+
+                    } else if (user.users.length <= lim) {
+                        $('ul.pagination > li#next').addClass('disabled');
+                        $('ul.pagination > li#lastNext').addClass('disabled');
+                        $('ul.pagination > li#next').addClass('disabled');
+                        $('ul.pagination > li#lastNext').addClass('disabled');
+
+                        let text = "<a class='page-link'>All Data</a>";
+                        $('ul.pagination > li#page').empty().append(text);
+                    }
+
+                }
+
+                $('select').on('change', function(){
+                    limits = this.value;
+
+                    renderTable(0, user.users.length, limits, user);
+                    initPagination(limits);
+
+                });
+
+
+            });
