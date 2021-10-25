@@ -20,10 +20,10 @@ html(lang="en")
             table#allusers.table.table-hovered.table-striped.table-bordered
                 thead
                     tr.table-primary
-                        td.text-center ID
-                        td.text-center NAME
-                        td.text-center EMAIL
-                        td.text-center MOBILE
+                        td#id.text-center.sorting ID
+                        td#name.text-center.sorting NAME
+                        td#email.text-center.sorting EMAIL
+                        td#mobile.text-center.sorting MOBILE
                         td.text-center ACTION
                 tbody
                     each user in users
@@ -79,7 +79,6 @@ html(lang="en")
 
         script(src="javascripts/bootstrap.min.js")
         script(src="javascripts/jquery-3.6.0.min.js")
-        script(src="javascripts/smpSortableTable.js")
 
         script.
             $(document).ready(async function(){
@@ -255,5 +254,41 @@ html(lang="en")
 
                 });
 
+
+
+                //TODO: Sorting Data by id, name, email, mobile
+                $('.sorting').click(function() {
+                    var li = limits || 5;
+
+                    var direction = $(this).hasClass('asc') ? 'desc' : 'asc';
+                    var colName = $(this).attr('id');
+
+                    $('.sorting').removeClass('desc asc');
+
+                    user.users.sort(sortFn(colName)[direction]);
+
+                    renderTable(0, user.users.length, li, user)
+
+                    $(this).addClass(direction)
+
+                    console.log(li);
+                });
+
+                var sortFn = function (key) {
+                    return {
+                        desc: function (a, b) {
+                            if (typeof a[key] !== 'object')
+                                return a[key] > b[key] ? -1 : (a[key] < b[key] ? 1  : 0);
+                            else
+                                return a[key].sort > b[key].sort ? -1 : (a[key].sort < b[key].sort ? 1  : 0);
+                        },
+                        asc: function (a, b) {
+                            if (typeof a[key] !== 'object')
+                                return a[key] < b[key] ? -1 : (a[key] > b[key] ? 1  : 0);
+                            else
+                                return a[key].sort < b[key].sort ? -1 : (a[key].sort > b[key].sort ? 1  : 0);
+                        }
+                    }
+                };
 
             });
