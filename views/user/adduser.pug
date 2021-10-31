@@ -5,8 +5,8 @@ html(lang="en")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         link(rel="stylesheet", href="stylesheets/bootstrap.min.css")
-        title= title 
-    body 
+        title= title
+    body
         .container.mt-4
             h3.mb-5 Add User
             form#adduser.needs-validation(action="/adduser" method="POST")
@@ -14,7 +14,7 @@ html(lang="en")
                     label.col.col-form-label(for="name") Name
                     .col-sm-10
                         input#name.form-control(type="name" name="name")
-                        .valid-feedback 
+                        .valid-feedback
                 .mb-3.row
                     label.col-sm-2.col-form-label(for="email") Email
                     .col-sm-10
@@ -31,14 +31,14 @@ html(lang="en")
                     label.col-sm-2.col-form-label(for="address") address
                     .col-sm-10
                         textarea#address.form-control(cols="30" rows="3" name="address")
-            
+
                 .mt-5.d-grid.gap-2.d-md-flex.justify-content-md-end
                     button.btn.btn-primary Cancel
                     button.btn.btn-primary Submit
 
     script(src="javascripts/bootstrap.min.js")
-    script(src="javascripts/jquery-3.6.0.min.js") 
-    script(src="javascripts/jquery.validate.js") 
+    script(src="javascripts/jquery-3.6.0.min.js")
+    script(src="javascripts/jquery.validate.js")
 
     script.
         $(document).ready(function() {

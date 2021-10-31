@@ -39,6 +39,8 @@ router.post('/adduser', async(req, res, next) => {
 
   const _id = await generateid.makeId(req.body.birthdate);
 
+  console.log(_id)
+
   const createuser = await User.build({
     id: _id,
     name: req.body.name,
